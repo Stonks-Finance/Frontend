@@ -1,2 +1,0 @@
-# climatetech
-# stonks
