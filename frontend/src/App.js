@@ -1,9 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import HomePage from './pages/HomePage'; 
-
-// import './assets/scss/main.scss';
-import '@fortawesome/fontawesome-free/css/all.min.css';
+import HomePage from './pages/HomePage';
+import './assets/scss/main.scss';  
 
 const App = () => {
   return (
