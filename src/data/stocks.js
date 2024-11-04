@@ -8,7 +8,6 @@ const stocks = [
   { name: 'Tesla Inc.', ticker: 'TSLA', price: '690.34', change: '-0.57%', positive: false },
   { name: 'Amazon.com', ticker: 'AMZN', price: '3,220.34', change: '+0.25%', positive: true },
   { name: 'NVIDIA Corp.', ticker: 'NVDA', price: '620.15', change: '+2.16%', positive: true },
-  { name: 'Chevron Corp.', ticker: 'CVX', price: '108.87', change: '-0.55%', positive: false },
   { name: 'Netflix Inc.', ticker: 'NFLX', price: '495.22', change: '+0.89%', positive: true }
 ];
 

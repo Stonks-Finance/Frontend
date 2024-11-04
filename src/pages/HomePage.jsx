@@ -1,11 +1,11 @@
-// src/pages/HomePage.js
-
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createChart } from 'lightweight-charts';
 import candlestickData from '../data/candlestickData';
-import StockList from '../components/StockList'; // Import the StockList component
+import StockList from '../components/StockList';
 
 const HomePage = () => {
+    const [activeRange, setActiveRange] = useState('1D');
+
     useEffect(() => {
         const chartOptions = {
             layout: {
@@ -33,16 +33,31 @@ const HomePage = () => {
         chart.timeScale().fitContent();
     }, []);
 
+    const handleButtonClick = (range) => {
+        setActiveRange(range);
+    };
+
     return (
         <>
             <div className="container">
-              <StockList />
-              <div className='visual'>
-                
-                <div className='layout'>
-                    <div id="chart-container" style={{ width: '100%', height: '100%' }}></div>
+                <StockList />
+                <div className='visual'>
+                    <h1>Dow Jones</h1>
+                    <div className="time-range-selector">
+                        {['1D', '1W', '1M', '3M', '6M', 'YTD', '1Y', '2Y', '5Y', '10Y', 'ALL'].map((range) => (
+                            <button
+                                key={range}
+                                className={`time-range-button ${activeRange === range ? 'active' : ''}`}
+                                onClick={() => handleButtonClick(range)}
+                            >
+                                {range}
+                            </button>
+                        ))}
+                    </div>
+                    <div className='layout'>
+                        <div id="chart-container" style={{ width: '100%', height: '100%' }}></div>
+                    </div>
                 </div>
-              </div>
             </div>
         </>
     );

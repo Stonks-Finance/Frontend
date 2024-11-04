@@ -5,13 +5,33 @@
 
 .visual {
   width: 77%;
-  padding: 20px;
+  padding: 40px 60px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  .time-range-selector{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin: 20px 20px 10px 0;
+    .time-range-button{
+      background: transparent;
+      color: #888;
+      border: none;
+      border-radius: 5px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      padding: 8px;
+      cursor: pointer;
+      &.active {
+        background-color: #393937; 
+        color: #FFF;
+      }
+    }
+  }
   .layout {
-    padding: 20px;
-    width: 80%;
+    width: 100%;
     height: 300px;
+    margin: 0 0 30px 0;
   }
 
   .stocks {
@@ -20,14 +40,56 @@
 }
 
 .stocks-container {
+  position: relative;
   background-color: #2E2C24;
   color: #FFF;
   padding: 16px;
   width: 23%;
   height: 100vh;
+  margin: 0;
   display: flex;
   flex-direction: column;
   border-right: 1px solid #525252;
+  .search{
+    margin: 0 5px 10px;
+    input{
+      background-color: #454441;
+      border-radius: 8px;
+      width: 100%;
+      border: none;
+      padding: 5px;
+      color: #DEDEDE;
+      font-size: 0.9rem;
+      border-bottom: 0.5px solid #454441;
+    }
+  }
+  .credentials{
+    position: absolute;
+    bottom: 0;
+    background-color: #393937;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    height: 40px;
+    align-items: center;
+    margin-left: -16px;
+    padding: 0 16px;
+    .name{
+      display: flex;
+      .s{
+        color: #757473;
+        font-size: 0.9rem;
+      }
+      .f{
+        color: #575755;
+        font-size: 0.9rem;
+      }
+    }
+    .market{
+      color: #8E8E93;
+      font-size: 0.9rem;
+    }
+  }
 
 
   .dev{
@@ -45,15 +107,23 @@
     margin: 0 0 10px 10px;
   }
 
+
   .stock-item {
     display: flex;
     width: 100%;
     align-items: center;
     justify-content: space-between;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-bottom: 0.5px solid gray;
-
+    padding: 15px 10px;
+    margin: 2px 0;
+    border-radius: 8px;
+    border-bottom: 0.5px solid #454441;
+    cursor: pointer;
+    &:hover{
+      background-color: #454441;
+    }
+    &.active {
+      background-color: #454441; 
+    }
     .stock-info {
       display: flex;
       flex-direction: column;
@@ -104,7 +174,7 @@
         text-align: right;
         padding: 2px 4px;
         border-radius: 4px;
-        color: #FFF;
+        color: #FFF; 
         width: 60px;
   
         &.positive {

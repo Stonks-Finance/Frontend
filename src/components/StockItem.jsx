@@ -1,10 +1,11 @@
-// src/components/StockItem.js
-
 import React from 'react';
 
-const StockItem = ({ stock }) => {
+const StockItem = ({ stock, isActive, onActivate }) => {
     return (
-        <div className="stock-item">
+        <div 
+            className={`stock-item ${isActive ? 'active' : ''}`} 
+            onClick={onActivate}
+        >
             <div className="stock-info">
                 <div className="stock-name">{stock.name}</div>
                 <div className="stock-ticker">{stock.ticker}</div>
@@ -17,7 +18,7 @@ const StockItem = ({ stock }) => {
                     {stock.change}
                 </div>
             </div>
-        </div>
+        </div> 
     );
 };
 
