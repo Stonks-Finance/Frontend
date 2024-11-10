@@ -1,5 +1,3 @@
-// src/components/ChartComponent.js
-
 import React, { useEffect, useRef } from 'react';
 import { createChart, ColorType } from 'lightweight-charts';
 

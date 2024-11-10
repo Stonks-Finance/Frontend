@@ -1,18 +1,22 @@
-import React, { useState, useEffect } from 'react';
+// StockList.js
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
+import StockContext from '../contexts/StockContext';
 
 const StockList = () => {
     const [activeStock, setActiveStock] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [stocks, setStocks] = useState([]);
+    const { selectedStock, setSelectedStock } = useContext(StockContext); 
 
     useEffect(() => {
         fetchStocksFromAPI();
     }, []);
 
-    const handleActiveStock = (ticker) => {
+    const handleActiveStock = (ticker, name) => {
         setActiveStock(ticker); 
-        setSearchTerm(''); 
+        setSearchTerm('');
+        setSelectedStock(name); 
     };
 
     const handleSearch = (event) => {
@@ -34,6 +38,11 @@ const StockList = () => {
             }));
 
             setStocks(formattedStocks);
+
+            if (formattedStocks.length > 0 && !selectedStock) {
+                setSelectedStock(formattedStocks[0].name);
+                setActiveStock(formattedStocks[0].ticker);
+            }
         } catch (error) {
             console.error('Error fetching data:', error);
         }
@@ -64,7 +73,7 @@ const StockList = () => {
                 <div 
                     key={stock.ticker} 
                     className={`stock-item ${activeStock === stock.ticker ? 'active' : ''}`} 
-                    onClick={() => handleActiveStock(stock.ticker)}
+                    onClick={() => handleActiveStock(stock.ticker, stock.name)}
                 >
                     <div className="stock-info">
                         <div className="stock-name">{stock.name}</div>
@@ -72,8 +81,7 @@ const StockList = () => {
                     </div>
                     <div className="stock-right">
                         <div className="stock-price">
-                            {/* You can add a price field here if available, or leave it blank */}
-                            {stock.price || '67310.31$'}
+                            {stock.price || 'N/A'}
                         </div>
                         <div className={`stock-change ${parseFloat(stock.change) >= 0 ? 'positive' : 'negative'}`}>
                             {stock.change}
