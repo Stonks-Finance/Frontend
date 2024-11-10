@@ -18,7 +18,7 @@ const ChartComponent = ({ data, options = {} }) => {
                 background: { type: ColorType.Solid, color: options.backgroundColor || 'white' },
                 textColor: options.textColor || 'black',
             },
-            ...options.chartOptions, // Additional options for customization
+            ...options.chartOptions, 
         });
 
         const areaSeries = chart.addAreaSeries({
