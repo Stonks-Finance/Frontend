@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
+import PredictionContext from '../contexts/PredictionContext';
 
 const PredictionModel = () => {
-    const [interval, setInterval] = useState('1M'); 
-    const [duration, setDuration] = useState(1); 
+    const { interval, setInterval, duration, setDuration } = useContext(PredictionContext);
 
     const handleIntervalChange = (event) => {
         setInterval(event.target.value);

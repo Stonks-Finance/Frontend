@@ -1,12 +1,69 @@
-// components/PredictionChart.js
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useContext, useState } from 'react';
 import { createChart } from 'lightweight-charts';
+import StockContext from '../contexts/StockContext';
+import PredictionContext from '../contexts/PredictionContext';
 
 const PredictionChart = () => {
     const chartContainerRef = useRef();
+    const { selectedStock } = useContext(StockContext);
+    const { interval, duration } = useContext(PredictionContext);
+    const [combinedData, setCombinedData] = useState([]);
 
     useEffect(() => {
-        // Updated chart options with new colors
+        const fetchData = async () => {
+            if (!selectedStock) return;
+
+            console.log('Fetching data from APIs...');
+
+            const apiInterval = interval === '1M' ? 'ONE_MINUTE' : 'ONE_HOUR';
+
+            const postUrl = new URL('http://localhost:8080/api/v1/stock_predictor/predict');
+            postUrl.searchParams.append('stock_name', selectedStock);
+            postUrl.searchParams.append('interval', apiInterval);
+            postUrl.searchParams.append('duration', duration);
+
+            const getUrl = new URL('http://localhost:8080/api/v1/stock_predictor/past-values/simple');
+            getUrl.searchParams.append('stock_name', selectedStock);
+            getUrl.searchParams.append('interval', apiInterval);
+            getUrl.searchParams.append('duration', 50);
+
+            try {
+                const postResponse = await fetch(postUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                const postData = postResponse.ok ? await postResponse.json() : null;
+
+                const getResponse = await fetch(getUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                const getData = getResponse.ok ? await getResponse.json() : null;
+
+                if (postData && postData.success && getData && getData.success) {
+                    const combinedResults = [...postData.data, ...getData.data].sort(
+                        (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+                    );
+                    setCombinedData(combinedResults);
+                    console.log('Combined Data:', combinedResults);
+                } else {
+                    console.error('Error fetching data from one or both APIs');
+                }
+            } catch (error) {
+                console.error('Network error:', error);
+            }
+        };
+
+        fetchData();
+    }, [selectedStock, interval, duration]);
+
+    useEffect(() => {
         const chartOptions = { 
             layout: { 
                 textColor: 'gray', 
@@ -22,38 +79,24 @@ const PredictionChart = () => {
         };
         
         const chart = createChart(chartContainerRef.current, chartOptions);
-        const baselineSeries = chart.addBaselineSeries({
-            baseValue: { type: 'price', price: 25 },
-            topLineColor: 'rgba(38, 166, 154, 1)',
-            topFillColor1: 'rgba(38, 166, 154, 0.28)',
-            topFillColor2: 'rgba(38, 166, 154, 0.05)',
-            bottomLineColor: 'rgba(239, 83, 80, 1)',
-            bottomFillColor1: 'rgba(239, 83, 80, 0.05)',
-            bottomFillColor2: 'rgba(239, 83, 80, 0.28)',
+        const lineSeries = chart.addLineSeries({
+            color: 'rgba(38, 166, 154, 1)',
+            lineWidth: 2,
         });
 
-        // Sample data for baseline series
-        const data = [
-            { value: 1, time: 1642425322 }, 
-            { value: 8, time: 1642511722 }, 
-            { value: 10, time: 1642598122 }, 
-            { value: 20, time: 1642684522 }, 
-            { value: 3, time: 1642770922 }, 
-            { value: 43, time: 1642857322 }, 
-            { value: 41, time: 1642943722 }, 
-            { value: 43, time: 1643030122 }, 
-            { value: 56, time: 1643116522 }, 
-            { value: 46, time: 1643202922 }
-        ];
-
-        baselineSeries.setData(data);
-
-        chart.timeScale().fitContent();
+        if (combinedData.length > 0) {
+            const chartData = combinedData.map(item => ({
+                value: item.price,
+                time: new Date(item.timestamp).getTime() / 1000 
+            }));
+            lineSeries.setData(chartData);
+            chart.timeScale().fitContent();
+        }
 
         return () => {
-            chart.remove(); // Cleanup on unmount
+            chart.remove(); 
         };
-    }, []);
+    }, [combinedData]);
 
     return <div ref={chartContainerRef} style={{ width: '100%', height: '300px' }} />;
 };
