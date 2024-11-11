@@ -1,8 +1,10 @@
+// pages/HomePage.js
 import React, { useState, useContext } from 'react';
 import StockList from '../components/StockList';
 import StockContext from '../contexts/StockContext';
 import CandlestickChart from '../components/CandlestickChart';
 import TimeRangeSelector from '../components/TimeRangeSelector';
+import PredictionChart from '../components/PredictionChart'; // Import the new component
 
 const HomePage = () => {
     const [activeRange, setActiveRange] = useState('3M');
@@ -19,6 +21,7 @@ const HomePage = () => {
                 <h1>{selectedStock || 'Select a stock'}</h1>
                 <TimeRangeSelector activeRange={activeRange} onRangeChange={handleButtonClick} />
                 <CandlestickChart selectedStock={selectedStock} activeRange={activeRange} />
+                <PredictionChart /> {/* Render PredictionChart below CandlestickChart */}
             </div>
         </div>
     );

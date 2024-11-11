@@ -1,0 +1,35 @@
+.prediction-model{
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  bottom: 40px;
+  padding: 30px 15px;
+  color: #ccc;
+  gap: 15px;
+  width: 100%;
+  background-color:  #2E2C24;
+  margin-left: -16px;
+  border-top: 1px solid #525252;
+
+
+  h2{
+    font-size: 1rem;
+    color: rgb(236, 236, 236)!important;
+  }
+  .prediction{
+    display: flex;
+    width: 100%;
+    gap: 5px;
+    flex-direction: column;
+    .pre{
+      border-radius: 8px;
+      background-color: #454441;
+      color: #ccc;
+      padding: 8px 2px;
+      border: 0px;
+    }
+    .ss{
+      padding: 8px 6px;
+    }
+  }
+}

@@ -6,7 +6,7 @@ import { StockProvider } from './contexts/StockContext'; // Import the StockProv
 
 const App = () => {
   return (
-    <StockProvider> {/* Wrap the Router with StockProvider to make context available */}
+    <StockProvider> 
       <Router>
         <Routes>
           <Route path="/" element={<HomePage />} />

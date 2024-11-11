@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import StockContext from '../contexts/StockContext';
+import PredictionModel from './PredictionModel';
 
 const StockList = () => {
     const [activeStock, setActiveStock] = useState(null);
@@ -33,7 +34,7 @@ const StockList = () => {
             const data = await response.json();
             const formattedStocks = data.data.map(stock => ({
                 name: stock.stock_name || '',
-                ticker: stock.ticker || '', 
+                ticker: stock.ticker || 'company', 
                 change: stock.change || '',
             }));
 
@@ -87,8 +88,10 @@ const StockList = () => {
                             {stock.change}
                         </div>
                     </div>
+
                 </div>
             ))}
+            <PredictionModel/>
             <div className="credentials">
                 <Link className="name" target='blank' to="https://github.com/Stonks-Finance">
                     <p className='s'>stonks/</p>
