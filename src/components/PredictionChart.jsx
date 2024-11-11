@@ -47,9 +47,19 @@ const PredictionChart = () => {
                 const getData = getResponse.ok ? await getResponse.json() : null;
 
                 if (postData && postData.success && getData && getData.success) {
-                    const combinedResults = [...postData.data, ...getData.data].sort(
-                        (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+                    let combinedResults = [...postData.data, ...getData.data].map(item => ({
+                        ...item,
+                        time: Math.floor(new Date(item.timestamp).getTime() / 1000) // Convert ISO timestamp to Unix timestamp (in seconds)
+                    }));
+
+                    // Sort data by time in ascending order
+                    combinedResults = combinedResults.sort((a, b) => a.time - b.time);
+
+                    // Remove duplicate entries (if any) based on the time field
+                    combinedResults = combinedResults.filter((item, index, self) =>
+                        index === self.findIndex(t => t.time === item.time)
                     );
+
                     setCombinedData(combinedResults);
                     console.log('Combined Data:', combinedResults);
                 } else {
@@ -87,14 +97,14 @@ const PredictionChart = () => {
         if (combinedData.length > 0) {
             const chartData = combinedData.map(item => ({
                 value: item.price,
-                time: new Date(item.timestamp).getTime() / 1000 
+                time: item.time // Use the already converted Unix timestamp
             }));
             lineSeries.setData(chartData);
             chart.timeScale().fitContent();
         }
 
         return () => {
-            chart.remove(); 
+            chart.remove(); // Cleanup on unmount
         };
     }, [combinedData]);
 

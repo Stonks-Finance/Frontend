@@ -20,13 +20,22 @@ const CandlestickChart = ({ selectedStock, activeRange }) => {
                 const data = await response.json();
                 if (data.success && data.data) {
                     const formattedData = data.data.map(item => ({
-                        time: item.time,
+                        time: Math.floor(new Date(item.timestamp).getTime() / 1000), // Convert ISO timestamp to Unix timestamp (in seconds)
                         open: item.open,
                         high: item.high,
                         low: item.low,
                         close: item.close,
                     }));
-                    setCandlestickData(formattedData);
+
+                    // Sort data by time in ascending order
+                    const sortedData = formattedData.sort((a, b) => a.time - b.time);
+
+                    // Remove duplicate entries (if any) based on the time field
+                    const uniqueData = sortedData.filter((item, index, self) =>
+                        index === self.findIndex(t => t.time === item.time)
+                    );
+
+                    setCandlestickData(uniqueData);
                 } else {
                     console.error('Failed to fetch candlestick data:', data.message);
                 }
