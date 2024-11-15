@@ -1,17 +1,36 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import PredictionContext from '../contexts/PredictionContext';
 
 const PredictionModel = () => {
     const { interval, setInterval, duration, setDuration } = useContext(PredictionContext);
+    const [inputValue, setInputValue] = useState(duration);
 
     const handleIntervalChange = (event) => {
         setInterval(event.target.value);
+        const maxDuration = event.target.value === '1H' ? 5 : 15;
+        if (inputValue > maxDuration) {
+            setInputValue(maxDuration);
+            setDuration(maxDuration);
+        }
     };
 
-    const handleDurationChange = (event) => {
-        const value = parseInt(event.target.value, 10);
-        if (!isNaN(value)) {
-            setDuration(value);
+    const handleCustomDurationChange = (event) => {
+        const value = event.target.value.replace(/\D/g, ''); 
+        if (value === '') {
+            setInputValue('');
+            setDuration('');
+            return;
+        }
+
+        const numericValue = parseInt(value, 10);
+        const maxDuration = interval === '1H' ? 5 : 15;
+
+        if (numericValue > 0 && numericValue <= maxDuration) {
+            setInputValue(numericValue);
+            setDuration(numericValue);
+        } else if (numericValue > maxDuration) {
+            setInputValue(maxDuration);
+            setDuration(maxDuration);
         }
     };
 
@@ -26,14 +45,14 @@ const PredictionModel = () => {
                 </select>
             </div>
             <div className="duration-selection prediction">
-                <label htmlFor="duration">Select Duration </label>
+                <label htmlFor="duration">Select Duration (max {interval === '1H' ? 5 : 15} {interval === '1H' ? 'hours' : 'minutes'})</label>
                 <input
                     className='pre ss'
-                    type="number"
+                    type="text"
                     id="duration"
-                    min={1}
-                    value={duration}
-                    onChange={handleDurationChange}
+                    value={inputValue}
+                    onChange={handleCustomDurationChange}
+                    placeholder="Enter duration"
                 />
             </div>
         </div>

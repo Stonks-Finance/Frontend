@@ -39,7 +39,8 @@ const StockList = () => {
 
             setStocks(formattedStocks);
 
-            if (formattedStocks.length > 0 && !selectedStock) {
+            // Set the first item as active by default if available
+            if (formattedStocks.length > 0) {
                 setSelectedStock(formattedStocks[0].name);
                 setActiveStock(formattedStocks[0].ticker);
             }
@@ -66,7 +67,7 @@ const StockList = () => {
                 />
             </div>
             <div className='dev'>
-                <h2>Business News</h2>
+                <h2>Trading Charts</h2>
                 <p>From Stonks Finance</p>
             </div>
             {displayedStocks.map((stock) => (
@@ -87,7 +88,6 @@ const StockList = () => {
                             {stock.change}
                         </div>
                     </div>
-
                 </div>
             ))}
             <PredictionModel/>

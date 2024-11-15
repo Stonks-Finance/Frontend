@@ -7,7 +7,8 @@ const PredictionChart = () => {
     const chartContainerRef = useRef();
     const { selectedStock } = useContext(StockContext);
     const { interval, duration } = useContext(PredictionContext);
-    const [combinedData, setCombinedData] = useState([]);
+    const [historicalData, setHistoricalData] = useState([]);
+    const [predictedData, setPredictedData] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -25,7 +26,7 @@ const PredictionChart = () => {
             const getUrl = new URL('http://localhost:8080/api/v1/stock_predictor/past-values/simple');
             getUrl.searchParams.append('stock_name', selectedStock);
             getUrl.searchParams.append('interval', apiInterval);
-            getUrl.searchParams.append('duration', 50);
+            getUrl.searchParams.append('duration', 20);
 
             try {
                 const postResponse = await fetch(postUrl, {
@@ -36,6 +37,10 @@ const PredictionChart = () => {
                 });
 
                 const postData = postResponse.ok ? await postResponse.json() : null;
+                
+                if (postData) {
+                    console.log('Prediction Data:', postData); 
+                }
 
                 const getResponse = await fetch(getUrl, {
                     method: 'GET',
@@ -47,19 +52,24 @@ const PredictionChart = () => {
                 const getData = getResponse.ok ? await getResponse.json() : null;
 
                 if (postData && postData.success && getData && getData.success) {
-                    let combinedResults = [...postData.data, ...getData.data].map(item => ({
+                    const historicalResults = getData.data.map(item => ({
                         ...item,
-                        time: Math.floor(new Date(item.timestamp).getTime() / 1000)
+                        time: Math.floor(new Date(item.timestamp).getTime() / 1000),
                     }));
 
-                    combinedResults = combinedResults.sort((a, b) => a.time - b.time);
+                    const predictedResults = postData.data.map(item => ({
+                        ...item,
+                        time: Math.floor(new Date(item.timestamp).getTime() / 1000),
+                    }));
 
-                    combinedResults = combinedResults.filter((item, index, self) =>
-                        index === self.findIndex(t => t.time === item.time)
-                    );
+                    const sortedHistorical = historicalResults.sort((a, b) => a.time - b.time);
+                    const sortedPredicted = predictedResults.sort((a, b) => a.time - b.time);
 
-                    setCombinedData(combinedResults);
-                    console.log('Combined Data:', combinedResults);
+                    setHistoricalData(sortedHistorical);
+                    setPredictedData(sortedPredicted);
+
+                    console.log('Historical Data:', sortedHistorical);
+                    console.log('Predicted Data (Processed):', sortedPredicted);
                 } else {
                     console.error('Error fetching data from one or both APIs');
                 }
@@ -83,28 +93,49 @@ const PredictionChart = () => {
             grid: {
                 vertLines: { color: '#555555' },
                 horzLines: { color: '#555555' },
-            }
+            },
+
+            timeScale: {
+                timeVisible: true, 
+                secondsVisible: true, 
+            },
+            
         };
         
         const chart = createChart(chartContainerRef.current, chartOptions);
-        const lineSeries = chart.addLineSeries({
-            color: 'rgba(38, 166, 154, 1)',
+
+        const historicalSeries = chart.addLineSeries({
+            color: 'rgba(38, 166, 154, 1)', 
             lineWidth: 2,
         });
 
-        if (combinedData.length > 0) {
-            const chartData = combinedData.map(item => ({
+        const predictedSeries = chart.addLineSeries({
+            color: 'rgba(255, 0, 0, 1)', 
+            lineWidth: 2,
+        });
+
+        if (historicalData.length > 0) {
+            const historicalChartData = historicalData.map(item => ({
                 value: item.price,
                 time: item.time 
             }));
-            lineSeries.setData(chartData);
-            chart.timeScale().fitContent();
+            historicalSeries.setData(historicalChartData);
         }
+
+        if (predictedData.length > 0) {
+            const predictedChartData = predictedData.map(item => ({
+                value: item.price,
+                time: item.time 
+            }));
+            predictedSeries.setData(predictedChartData);
+        }
+
+        chart.timeScale().fitContent();
 
         return () => {
             chart.remove(); 
         };
-    }, [combinedData]);
+    }, [historicalData, predictedData]);
 
     return <div ref={chartContainerRef} style={{ width: '100%', height: '300px' }} />;
 };
