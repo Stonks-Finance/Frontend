@@ -4,7 +4,7 @@ import StockContext from '../contexts/StockContext';
 import PredictionModel from './PredictionModel';
 
 const StockList = () => {
-    const [activeStock, setActiveStock] = useState(null);
+    const [activeStockIndex, setActiveStockIndex] = useState(null); 
     const [searchTerm, setSearchTerm] = useState('');
     const [stocks, setStocks] = useState([]);
     const { selectedStock, setSelectedStock } = useContext(StockContext); 
@@ -13,8 +13,8 @@ const StockList = () => {
         fetchStocksFromAPI();
     }, []);
 
-    const handleActiveStock = (ticker, name) => {
-        setActiveStock(ticker); 
+    const handleActiveStock = (index, name) => {
+        setActiveStockIndex(index); 
         setSearchTerm('');
         setSelectedStock(name); 
     };
@@ -31,7 +31,8 @@ const StockList = () => {
             }
 
             const data = await response.json();
-            const formattedStocks = data.data.map(stock => ({
+            const formattedStocks = data.data.map((stock, index) => ({
+                id: index, 
                 name: stock.stock_name || '',
                 ticker: stock.ticker || 'company', 
                 change: stock.change || '',
@@ -39,10 +40,9 @@ const StockList = () => {
 
             setStocks(formattedStocks);
 
-            // Set the first item as active by default if available
-            if (formattedStocks.length > 0) {
+            if (formattedStocks.length > 0 && !selectedStock) {
                 setSelectedStock(formattedStocks[0].name);
-                setActiveStock(formattedStocks[0].ticker);
+                setActiveStockIndex(0); 
             }
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -67,14 +67,14 @@ const StockList = () => {
                 />
             </div>
             <div className='dev'>
-                <h2>Trading Charts</h2>
+                <h2>Trading Chart</h2>
                 <p>From Stonks Finance</p>
             </div>
-            {displayedStocks.map((stock) => (
+            {displayedStocks.map((stock, index) => (
                 <div 
-                    key={stock.ticker} 
-                    className={`stock-item ${activeStock === stock.ticker ? 'active' : ''}`} 
-                    onClick={() => handleActiveStock(stock.ticker, stock.name)}
+                    key={`${stock.ticker}-${stock.name}`} 
+                    className={`stock-item ${activeStockIndex === index ? 'active' : ''}`} 
+                    onClick={() => handleActiveStock(index, stock.name)} 
                 >
                     <div className="stock-info">
                         <div className="stock-name">{stock.name}</div>
