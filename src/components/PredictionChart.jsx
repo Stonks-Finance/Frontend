@@ -37,7 +37,7 @@ const PredictionChart = () => {
                 });
 
                 const postData = postResponse.ok ? await postResponse.json() : null;
-                
+
                 if (postData) {
                     console.log('Prediction Data:', postData); 
                 }
@@ -65,7 +65,13 @@ const PredictionChart = () => {
                     const sortedHistorical = historicalResults.sort((a, b) => a.time - b.time);
                     const sortedPredicted = predictedResults.sort((a, b) => a.time - b.time);
 
-                    setHistoricalData(sortedHistorical);
+                    if (sortedHistorical.length > 0 && sortedPredicted.length > 0) {
+                        const extendedHistorical = [...sortedHistorical, sortedPredicted[0]];
+                        setHistoricalData(extendedHistorical);
+                    } else {
+                        setHistoricalData(sortedHistorical);
+                    }
+
                     setPredictedData(sortedPredicted);
 
                     console.log('Historical Data:', sortedHistorical);
@@ -94,12 +100,10 @@ const PredictionChart = () => {
                 vertLines: { color: '#555555' },
                 horzLines: { color: '#555555' },
             },
-
             timeScale: {
                 timeVisible: true, 
                 secondsVisible: true, 
             },
-            
         };
         
         const chart = createChart(chartContainerRef.current, chartOptions);
