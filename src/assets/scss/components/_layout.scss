@@ -50,6 +50,14 @@
   display: flex;
   flex-direction: column;
   border-right: 1px solid #525252;
+  .stocks{
+    height: 500px;
+    overflow-y: auto; 
+    overflow-x: hidden;
+    &::-webkit-scrollbar {
+      display: none;
+  }
+  }
   .search{
     margin: 0 5px 10px;
     input{

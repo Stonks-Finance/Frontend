@@ -40,7 +40,7 @@ const PredictionModel = () => {
             <div className="interval-selection prediction">
                 <label htmlFor="interval">Select Interval </label>
                 <select className='pre' id="interval" value={interval} onChange={handleIntervalChange}>
-                    <option value="1M">1 Minute</option>
+                    {/* <option value="1M">1 Minute</option> */}
                     <option value="1H">1 Hour</option>
                 </select>
             </div>

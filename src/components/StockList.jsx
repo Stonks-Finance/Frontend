@@ -70,6 +70,8 @@ const StockList = () => {
                 <h2>Trading Chart</h2>
                 <p>From Stonks Finance</p>
             </div>
+            <div className="stocks">
+
             {displayedStocks.map((stock, index) => (
                 <div 
                     key={`${stock.ticker}-${stock.name}`} 
@@ -90,6 +92,7 @@ const StockList = () => {
                     </div>
                 </div>
             ))}
+                </div>
             <PredictionModel/>
             <div className="credentials">
                 <Link className="name" target='blank' to="https://github.com/Stonks-Finance">
