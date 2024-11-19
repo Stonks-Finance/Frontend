@@ -1,13 +1,16 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { createChart } from 'lightweight-charts';
+import loadingSvg from '../assets/img/loading.svg';
 
 const CandlestickChart = ({ selectedStock, activeRange }) => {
     const [candlestickData, setCandlestickData] = useState([]);
+    const [loading, setLoading] = useState(true);
     const chartRef = useRef(null);
 
     useEffect(() => {
         const fetchCandlestickData = async () => {
             if (!selectedStock) return;
+            setLoading(true);
 
             const { interval, duration } = getIntervalAndDuration(activeRange);
 
@@ -39,6 +42,8 @@ const CandlestickChart = ({ selectedStock, activeRange }) => {
                 }
             } catch (error) {
                 console.error('Error fetching candlestick data:', error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -46,40 +51,46 @@ const CandlestickChart = ({ selectedStock, activeRange }) => {
     }, [selectedStock, activeRange]);
 
     useEffect(() => {
-        if (candlestickData.length > 0) {
+        if (loading || candlestickData.length === 0) {
             if (chartRef.current) {
-                chartRef.current.remove();
+                chartRef.current.remove(); 
+                chartRef.current = null;
             }
-
-            const chartOptions = {
-                layout: {
-                    textColor: 'gray',
-                    background: { type: 'solid', color: '#1E1E1E' },
-                },
-                grid: {
-                    vertLines: { color: '#555555' },
-                    horzLines: { color: '#555555' },
-                },
-            };
-
-            const chartContainer = document.getElementById('chart-container');
-            if (chartContainer) {
-                const chart = createChart(chartContainer, chartOptions);
-                chartRef.current = chart;
-
-                const candlestickSeries = chart.addCandlestickSeries({
-                    upColor: '#26a69a',
-                    downColor: '#ef5350',
-                    borderVisible: false,
-                    wickUpColor: '#26a69a',
-                    wickDownColor: '#ef5350',
-                });
-
-                candlestickSeries.setData(candlestickData);
-                chart.timeScale().fitContent();
-            }
+            return;
         }
-    }, [candlestickData]);
+
+        if (chartRef.current) {
+            chartRef.current.remove(); 
+        }
+
+        const chartOptions = {
+            layout: {
+                textColor: 'gray',
+                background: { type: 'solid', color: '#1E1E1E' },
+            },
+            grid: {
+                vertLines: { color: '#555555' },
+                horzLines: { color: '#555555' },
+            },
+        };
+
+        const chartContainer = document.getElementById('chart-container');
+        if (chartContainer) {
+            const chart = createChart(chartContainer, chartOptions);
+            chartRef.current = chart;
+
+            const candlestickSeries = chart.addCandlestickSeries({
+                upColor: '#26a69a',
+                downColor: '#ef5350',
+                borderVisible: false,
+                wickUpColor: '#26a69a',
+                wickDownColor: '#ef5350',
+            });
+
+            candlestickSeries.setData(candlestickData);
+            chart.timeScale().fitContent();
+        }
+    }, [candlestickData, loading]);
 
     const getIntervalAndDuration = (range) => {
         switch (range) {
@@ -110,7 +121,17 @@ const CandlestickChart = ({ selectedStock, activeRange }) => {
         }
     };
 
-    return <div id="chart-container" style={{ width: '100%', height: '300px' }}></div>;
+    return (
+        <div style={{ width: '100%', height: '300px' }}>
+            {loading ? (
+                <div className="loading-container">
+                    <img src={loadingSvg} alt="Loading..." />
+                </div>
+            ) : (
+                <div id="chart-container" style={{ width: '100%', height: '300px' }} />
+            )}
+        </div>
+    );
 };
 
 export default CandlestickChart;

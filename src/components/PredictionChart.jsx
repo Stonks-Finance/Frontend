@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useContext, useState } from 'react';
 import { createChart } from 'lightweight-charts';
 import StockContext from '../contexts/StockContext';
 import PredictionContext from '../contexts/PredictionContext';
+import loadingSvg from '../assets/img/loading.svg';
 
 const PredictionChart = () => {
     const chartContainerRef = useRef();
@@ -9,12 +10,12 @@ const PredictionChart = () => {
     const { interval, duration } = useContext(PredictionContext);
     const [historicalData, setHistoricalData] = useState([]);
     const [predictedData, setPredictedData] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
             if (!selectedStock) return;
-
-            console.log('Fetching data from APIs...');
+            setLoading(true);
 
             const apiInterval = interval === '1M' ? 'ONE_MINUTE' : 'ONE_HOUR';
 
@@ -37,10 +38,6 @@ const PredictionChart = () => {
                 });
 
                 const postData = postResponse.ok ? await postResponse.json() : null;
-
-                if (postData) {
-                    console.log('Prediction Data:', postData); 
-                }
 
                 const getResponse = await fetch(getUrl, {
                     method: 'GET',
@@ -73,14 +70,11 @@ const PredictionChart = () => {
                     }
 
                     setPredictedData(sortedPredicted);
-
-                    console.log('Historical Data:', sortedHistorical);
-                    console.log('Predicted Data (Processed):', sortedPredicted);
-                } else {
-                    console.error('Error fetching data from one or both APIs');
                 }
             } catch (error) {
                 console.error('Network error:', error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -88,6 +82,10 @@ const PredictionChart = () => {
     }, [selectedStock, interval, duration]);
 
     useEffect(() => {
+        if (loading || (historicalData.length === 0 && predictedData.length === 0)) {
+            return;
+        }
+
         const chartOptions = { 
             layout: { 
                 textColor: 'gray', 
@@ -139,9 +137,19 @@ const PredictionChart = () => {
         return () => {
             chart.remove(); 
         };
-    }, [historicalData, predictedData]);
+    }, [historicalData, predictedData, loading]);
 
-    return <div ref={chartContainerRef} style={{ width: '100%', height: '300px' }} />;
+    return (
+        <div style={{ width: '100%', height: '300px' }}>
+            {loading ? (
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
+                    <img src={loadingSvg} alt="Loading..." />
+                </div>
+            ) : (
+                <div ref={chartContainerRef} style={{ width: '100%', height: '300px' }} />
+            )}
+        </div>
+    );
 };
 
 export default PredictionChart;
