@@ -2,11 +2,15 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import StockContext from '../contexts/StockContext';
 import PredictionModel from './PredictionModel';
+import loadingSvg from '../assets/img/loading.svg';
+import stonks from '../assets/img/stonks.png';
+import notstonks from '../assets/img/not_stonks.png';
 
 const StockList = () => {
     const [activeStockIndex, setActiveStockIndex] = useState(null); 
     const [searchTerm, setSearchTerm] = useState('');
     const [stocks, setStocks] = useState([]);
+    const [loading, setLoading] = useState(true); 
     const { selectedStock, setSelectedStock } = useContext(StockContext); 
 
     useEffect(() => {
@@ -36,6 +40,7 @@ const StockList = () => {
                 name: stock.stock_name || '',
                 ticker: stock.ticker || 'company', 
                 change: stock.change || '',
+                price: stock.price || 'N/A' 
             }));
 
             setStocks(formattedStocks);
@@ -46,6 +51,8 @@ const StockList = () => {
             }
         } catch (error) {
             console.error('Error fetching data:', error);
+        } finally {
+            setLoading(false); 
         }
     };
 
@@ -55,6 +62,14 @@ const StockList = () => {
     );
 
     const displayedStocks = searchTerm ? filteredStocks : stocks;
+
+    if (loading) {
+        return (
+            <div className="loading-overlay">
+                <img src={loadingSvg} alt="Loading..." />
+            </div>
+        );
+    }
 
     return (
         <div className="stocks-container">
@@ -71,28 +86,33 @@ const StockList = () => {
                 <p>From Stonks Finance</p>
             </div>
             <div className="stocks">
-
-            {displayedStocks.map((stock, index) => (
-                <div 
-                    key={`${stock.ticker}-${stock.name}`} 
-                    className={`stock-item ${activeStockIndex === index ? 'active' : ''}`} 
-                    onClick={() => handleActiveStock(index, stock.name)} 
-                >
-                    <div className="stock-info">
-                        <div className="stock-name">{stock.name}</div>
-                        <div className="stock-ticker">{stock.ticker}</div>
-                    </div>
-                    <div className="stock-right">
-                        <div className="stock-price">
-                            {stock.price || 'N/A'}
+                {displayedStocks.map((stock, index) => (
+                    <div 
+                        key={`${stock.ticker}-${stock.name}`} 
+                        className={`stock-item ${activeStockIndex === index ? 'active' : ''}`} 
+                        onClick={() => handleActiveStock(index, stock.name)} 
+                    >
+                        <div className="stock-info">
+                            <div className="stock-name">{stock.name}</div>
+                            <div className="stock-ticker">{stock.ticker}</div>
                         </div>
-                        <div className={`stock-change ${parseFloat(stock.change) >= 0 ? 'positive' : 'negative'}`}>
-                            {stock.change}
+                        <div className="stonks-img">
+                            <img 
+                                src={parseFloat(stock.change) >= 0 ? stonks : notstonks} 
+                                alt={parseFloat(stock.change) >= 0 ? 'Stonks' : 'Not Stonks'} 
+                            />
+                        </div>
+                        <div className="stock-right">
+                            <div className="stock-price">
+                                {stock.price}
+                            </div>
+                            <div className={`stock-change ${parseFloat(stock.change) >= 0 ? 'positive' : 'negative'}`}>
+                                {stock.change}
+                            </div>
                         </div>
                     </div>
-                </div>
-            ))}
-                </div>
+                ))}
+            </div>
             <PredictionModel/>
             <div className="credentials">
                 <Link className="name" target='blank' to="https://github.com/Stonks-Finance">
