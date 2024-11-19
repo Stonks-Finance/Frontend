@@ -25,7 +25,7 @@ const StockList = () => {
 
     const fetchStocksFromAPI = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/v1/stock_predictor/stock-overview');
+            const response = await fetch('https://ms-main.onrender.com/api/v1/stock_predictor/stock-overview');
             if (!response.ok) {
                 throw new Error(`Network response was not ok. Status: ${response.status}`);
             }

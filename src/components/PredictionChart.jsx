@@ -18,12 +18,12 @@ const PredictionChart = () => {
 
             const apiInterval = interval === '1M' ? 'ONE_MINUTE' : 'ONE_HOUR';
 
-            const postUrl = new URL('http://localhost:8080/api/v1/stock_predictor/predict');
+            const postUrl = new URL('https://ms-main.onrender.com/api/v1/stock_predictor/predict');
             postUrl.searchParams.append('stock_name', selectedStock);
             postUrl.searchParams.append('interval', apiInterval);
             postUrl.searchParams.append('duration', duration);
 
-            const getUrl = new URL('http://localhost:8080/api/v1/stock_predictor/past-values/simple');
+            const getUrl = new URL('https://ms-main.onrender.com/api/v1/stock_predictor/past-values/simple');
             getUrl.searchParams.append('stock_name', selectedStock);
             getUrl.searchParams.append('interval', apiInterval);
             getUrl.searchParams.append('duration', 20);
