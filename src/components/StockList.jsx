@@ -40,7 +40,7 @@ const StockList = () => {
                 name: stock.stock_name || '',
                 ticker: stock.ticker || 'company', 
                 change: stock.change || '',
-                price: stock.current_price || 'N/A' 
+                current_price: stock.current_price || 'N/A' 
             }));
 
             setStocks(formattedStocks);
@@ -104,7 +104,7 @@ const StockList = () => {
                         </div>
                         <div className="stock-right">
                             <div className="stock-price">
-                                {stock.current_price}
+                                {stock.current_prices}
                             </div>
                             <div className={`stock-change ${parseFloat(stock.change) >= 0 ? 'positive' : 'negative'}`}>
                                 {stock.change}
