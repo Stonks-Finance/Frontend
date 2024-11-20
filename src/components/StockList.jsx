@@ -40,7 +40,7 @@ const StockList = () => {
                 name: stock.stock_name || '',
                 ticker: stock.ticker || 'company', 
                 change: stock.change || '',
-                current_price: stock.current_price || 'N/A' 
+                current_price: stock.current_price.toFixed(2) || 'N/A' 
             }));
 
             setStocks(formattedStocks);
